@@ -10,8 +10,6 @@ namespace demoapi.Models
 
         public string Description { get; set;  }
 
-        public PointOfInterest()
-        {
-        }
+
     }
 }
