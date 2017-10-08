@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
 using demoapi.Models;
+using demoapi.Services;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,6 +15,18 @@ namespace demoapi.Controllers
     [Route("api/cities")]
     public class PointsOfInterestController : Controller
     {
+        private ILogger<PointsOfInterestController> _logger;
+        private IMailService _mailService;
+
+
+        // demonstrates constructor injection
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger, 
+                                          IMailService mailservice)
+        {
+            _logger = logger;
+            _mailService = mailservice;
+        }
+
         // GET: /<controller>/
         //public IActionResult Index()
         //{
@@ -22,13 +36,23 @@ namespace demoapi.Controllers
         [HttpGet("{cityId}/pointsofinterest")]
         public IActionResult GetPointsOfInterest(int cityId)
         {
-            var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
-            if(city == null) 
-            {
-                return NotFound();
-            }
+            try {
+                
+				var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+				if (city == null)
+				{
+					_logger.LogInformation($"City with {cityId} was not found when attempting to get points of interest");
+					return NotFound();
+				}
 
-            return Ok(city.PointsOfInterest);
+				return Ok(city.PointsOfInterest);
+            }
+            catch(Exception ex) 
+            {
+                _logger.LogCritical($"Exception while getting points of interest for city: {cityId}, message: {ex.Message}");
+                return StatusCode(500, "A problem occured with your request");
+            }
+           
         }
 
         [HttpGet("{cityId}/pointsofinterest/{id}", Name = "GetPointOfInterest")]
@@ -171,6 +195,31 @@ namespace demoapi.Controllers
 
             return NoContent();
 
+		}
+
+
+        [HttpDelete("{cityId}/pointsofinterest/{id}")]
+        public IActionResult DeletePointOfInterest(int cityId, int id)
+        {
+			var city = CitiesDataStore.Current.Cities.FirstOrDefault(c => c.Id == cityId);
+			if (city == null)
+			{
+				return NotFound();
+			}
+
+            var pointOfInterestFromStore = city.PointsOfInterest.FirstOrDefault(p => p.Id == id);
+            if(pointOfInterestFromStore == null)
+            {
+                return NotFound();
+            }
+
+
+            city.PointsOfInterest.Remove(pointOfInterestFromStore);
+
+            _mailService.Send("Point of interested deleted", 
+                              $"Point of interest ${pointOfInterestFromStore.Name} with id {pointOfInterestFromStore.Id} was deleted.");
+
+            return NoContent();
 		}
 
     }

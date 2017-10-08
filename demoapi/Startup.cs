@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using demoapi.Services;
+
 using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json.Serialization;
@@ -19,6 +22,8 @@ namespace demoapi
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+
         }
 
         public IConfiguration Configuration { get; }
@@ -29,8 +34,16 @@ namespace demoapi
             services.AddMvc()
                     .AddMvcOptions(o => o.OutputFormatters.Add(
                        new XmlDataContractSerializerOutputFormatter()));
-           
 
+
+            // we want to register our service (lightweight service - localmailservice)
+            // so we can inject it elsewhere and use it
+
+#if DEBUG
+            services.AddTransient<IMailService, LocalMailService>();
+#else
+            services.AddTransient<IMailService, CloudMailService>();
+#endif
 
             //        .AddJsonOptions(o =>
             //{
@@ -47,8 +60,14 @@ namespace demoapi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+
+            loggerFactory.AddNLog();
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
