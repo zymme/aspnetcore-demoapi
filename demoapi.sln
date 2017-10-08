@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "demoapi", "demoapi\demoapi.csproj", "{73B8B176-D35E-46A1-91BE-12599B1B1614}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73B8B176-D35E-46A1-91BE-12599B1B1614}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73B8B176-D35E-46A1-91BE-12599B1B1614}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73B8B176-D35E-46A1-91BE-12599B1B1614}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73B8B176-D35E-46A1-91BE-12599B1B1614}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
