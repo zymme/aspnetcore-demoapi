@@ -11,11 +11,7 @@ namespace demoapi.Controllers
     [Route("api/cities")]
     public class CitiesController : Controller
     {
-        // GET: /<controller>/
-        public IActionResult Index()
-        {
-            return View();
-        }
+       
 
         [HttpGet()]
         public IActionResult GetCities()

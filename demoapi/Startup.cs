@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using Swashbuckle.AspNetCore.Swagger;
+
 using NLog.Extensions.Logging;
 using demoapi.Services;
 
@@ -44,6 +47,14 @@ namespace demoapi
 #else
             services.AddTransient<IMailService, CloudMailService>();
 #endif
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info{ Title = "Cities API", Version="v1", Description="Sample Cities API"});
+
+            });
+           
+
+
 
             //        .AddJsonOptions(o =>
             //{
@@ -81,7 +92,13 @@ namespace demoapi
 
             app.UseMvc();
 
+			app.UseSwagger();
 
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sample Cities API");
+				c.ShowRequestHeaders();
+			});
         }
     }
 }
